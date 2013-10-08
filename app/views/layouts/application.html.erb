@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Writrr.li :: Write, Share &amp; Discover Stories :: Social Writing Made Easy</title>
+    <%= stylesheet_link_tag    "application", media: "all", "data-turbolinks-track" => true %>
+    <%= javascript_include_tag "application", "data-turbolinks-track" => true %>
+    <%= csrf_meta_tags %>
+  </head>
+  <body>
+
+    <%= render_metabar %>
+
+    <%= yield %>
+
+  </body>
+</html>
