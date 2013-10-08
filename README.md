@@ -277,3 +277,18 @@ Let's finish step 3 now. We now added all controllers and so on, so we're ready 
 To add the index page, we go to <tt>app/views/pages/</tt> and add a new file called <tt>index.html.erb</tt>. Fill this file with <tt>Hello Rails!</tt>. Remember? We added <tt>pages#index</tt> in <tt>config/routes.rb</tt> to be our root page. Now start the server again with <tt>rails s</tt> and locate to <tt>http://localhost:3000</tt>.
 
 Yay it says "Hello Rails!" :)
+
+### 07. Many many many
+
+When I created the scaffolds, I told Rails which references should be created. Like N stories belongs to 1 user and so on. Now we need to do the same just in the opposite way. We start with the <tt>app/models/user.rb</tt>. Add this right on top:
+
+    has_many :stories
+    has_many :ratings
+
+Now we go to <tt>app/models/story.rb</tt> and add this:
+
+    has_many :chapters
+
+And again at <tt>app/models/chapter.rb</tt>:
+
+    has_many :ratings
