@@ -63,7 +63,7 @@ The database details are located inside the <tt>config</tt>-folder. If we open i
 - <tt>test</tt>
 - <tt>production</tt>
 
-I'm developing on my localhost, so I just need to change the <tt>development<tt>-section for now:
+I'm developing on my localhost, so I just need to change the <tt>development</tt>-section for now:
 
     development:
       adapter: mysql2
@@ -92,12 +92,13 @@ First of all: uncommend. It says the root/index document should be loaded by the
 
     root 'pages#index'
 
-I'll get an error again if I try to run the server. Of course, because I just told rails it shall open the a page by a non-existing controller and method. So whats next? I keep that step in mind and go on with the next step.
+I'll get an error again if I try to run the server. Of course, because I just told rails it shall open the a page by a non-existing controller and method. So whats next? I keep that step in mind and go on with the next step. This step will be finished at step 6.
 
 ### 04. Prepare scaffolding
 
 The most important thing to create a Rails project is to make sure "What do I need?". First of all think of the database structure, relations and indexes. I came up with the following for now (can be customized at anytime):
 
+    DATABASE:
     |- users
       |- username
       |- email
@@ -115,14 +116,73 @@ The most important thing to create a Rails project is to make sure "What do I ne
       |- title
       |- content
     |- ratings
+      |- value
     |- follows
+
+    FILESYSTEM:
+    |- pages
 
 Rails automatically adds <tt>id</tt>, <tt>created_at</tt> and <tt>updated_at</tt> fields. So you don't need to take care of.
 
 Next part for me would be the relations:
 
-    users **1 = n** stories
-    stories **1 = n** chapters
-    chapters **1 = n** ratings
-    follows **1 = n** users
-    users **n = 1** follows
+    users     1 = n  stories
+    stories   1 = n  chapters
+    chapters  1 = n  ratings
+    follows   1 = n  users
+    users     n = 1  follows
+    ratings   n = 1  chapters
+    ratings   1 = 1  users
+
+Now I have a more or less clear database and filesystem structure of what I need. To make sure you understand what I mean with the filesystem part: This will be a controller to handle static pages like the index-, about-, ... pages.
+
+### 05. Scaffolding
+
+Scaffolds are an easy way to add controllers, models, helpers and so on to fulfill all your needs (= step 04).
+
+First of all I'll create a scaffold for the pages (remember step 03). This is actually no real scaffold but it fits into this section:
+
+    $ rails g controller pages
+
+or
+
+    $ rails generate controller pages
+
+**Hint:** At anytime you create something with <tt>rails g</tt> make sure you write plural words in lowercase and singular words in first letter uppercase. (pages or Page).
+
+New files will be added to our filesystem:
+
+    create  app/controllers/pages_controller.rb
+    invoke  erb
+    create    app/views/pages
+    invoke  helper
+    create    app/helpers/pages_helper.rb
+    invoke  assets
+    invoke    coffee
+    create      app/assets/javascripts/pages.js.coffee
+    invoke    scss
+    create      app/assets/stylesheets/pages.css.scss
+
+Let's go on with the real scaffolding. First users:
+
+    $ rails g scaffold User username email password name image link location bio:text
+
+This will add some files to our filesystem again. We added the scaffold <tt>User</tt> with all it's attributes. The default attribute type is <tt>string</tt>. I only changed it to <tt>text</tt> for bio.
+
+Next stories:
+
+    $ rails g scaffold Story title teaser:text genre users:references
+
+A story has a title, teaser and genre. So I added these as attributes. I also added <tt>users:references</tt>, this provides me a relationship between users and stories. If I now open <tt>app/models/story.rb</tt> I can see <tt>belongs_to :users</tt>. As it should be.
+
+Next chapters:
+
+    $ rails g scaffold Chapter title content:text stories:references
+
+The same thing like for stories now happend for the chapters. Only that the <tt>app/models/chapter.rb</tt> now says <tt>belongs_to :stories</tt>.
+
+Alright, next thing would be the rating:
+
+  $ rails g scaffold Rating value:integer users:references chapters:references
+
+Rating only has a value and belongs to users **and** chapters.
