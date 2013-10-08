@@ -183,6 +183,97 @@ The same thing like for stories now happend for the chapters. Only that the <tt>
 
 Alright, next thing would be the rating:
 
-  $ rails g scaffold Rating value:integer users:references chapters:references
+    $ rails g scaffold Rating value:integer users:references chapters:references
 
 Rating only has a value and belongs to users **and** chapters.
+
+And once more for the follows (note: this is a little but more complex).
+
+First we're going to add a new model for the relationships:
+
+    $ rails generate model Relationship follower_id:integer followed_id:integer
+
+After that we navigate to <tt>db/migrate/[TIMESTAMP]_create_relationships.rb</tt> and add some indexes:
+
+    class CreateRelationships < ActiveRecord::Migration
+      def change
+        create_table :relationships do |t|
+          t.integer :follower_id
+          t.integer :followed_id
+
+          t.timestamps
+        end
+        add_index :relationships, :follower_id
+        add_index :relationships, :followed_id
+        add_index :relationships, [:follower_id, :followed_id], unique: true
+      end
+    end
+
+Because we have every scaffold done before we're ready to migrate the database and prepare the test database as usual:
+
+    $ bundle exec rake db:migrate
+
+Now open the <tt>app/models/user.rb</tt> and edit it like this:
+
+    class User < ActiveRecord::Base
+      has_many :relationships, foreign_key: "follower_id", dependent: :destroy
+      has_many :followed_users, through: :relationships, source: :followed
+      has_many :reverse_relationships, foreign_key: "followed_id", class_name:  "Relationship", dependent: :destroy
+      has_many :followers, through: :reverse_relationships, source: :follower
+    end
+
+After that we edit the <tt>app/models/relationship.rb</tt> like this:
+
+    class Relationship < ActiveRecord::Base
+      belongs_to :follower, class_name: "User"
+      belongs_to :followed, class_name: "User"
+      validates :follower_id, presence: true
+      validates :followed_id, presence: true
+    end
+
+Let's add some more methods to the <tt>app/models/user.rb</tt>-model (like follow and unfollow):
+
+    class User < ActiveRecord::Base
+      has_many :relationships, foreign_key: "follower_id", dependent: :destroy
+      has_many :followed_users, through: :relationships, source: :followed
+
+      def following?(other_user)
+        relationships.find_by(followed_id: other_user.id)
+      end
+
+      def follow!(other_user)
+        relationships.create!(followed_id: other_user.id)
+      end
+
+      def unfollow!(other_user)
+        relationships.find_by(followed_id: other_user.id).destroy!
+      end
+    end
+
+Now we go back to the <tt>config/routes.rb</tt> to add the follow attributes to user. Change this:
+
+    resources :users
+
+to this:
+
+    resources :users do
+      member do
+        get :following, :followers
+      end
+    end
+
+This should do the trick. Let's go on with the next step now. We'll come back to that following topic as soon as I'm ready to implement it into the frontend.
+
+### 06. Hello Rails 2
+
+Let's finish step 3 now. We now added all controllers and so on, so we're ready to let Rails speak to us. For this we open <tt>app/controllers/pages_controller.rb</tt> and change it like this:
+
+    class PagesController < ApplicationController
+      def index
+
+      end
+    end
+
+To add the index page, we go to <tt>app/views/pages/</tt> and add a new file called <tt>index.html.erb</tt>. Fill this file with <tt>Hello Rails!</tt>. Remember? We added <tt>pages#index</tt> in <tt>config/routes.rb</tt> to be our root page. Now start the server again with <tt>rails s</tt> and locate to <tt>http://localhost:3000</tt>.
+
+Yay it says "Hello Rails!" :)
