@@ -3,7 +3,7 @@ class CreateChapters < ActiveRecord::Migration
     create_table :chapters do |t|
       t.string :title
       t.text :content
-      t.references :stories, index: true
+      t.references :story, index: true
 
       t.timestamps
     end

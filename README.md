@@ -92,7 +92,7 @@ First of all: uncommend. It says the root/index document should be loaded by the
 
     root 'pages#index'
 
-I'll get an error again if I try to run the server. Of course, because I just told rails it shall open the a page by a non-existing controller and method. So whats next? I keep that step in mind and go on with the next step. This step will be finished at step 6.
+I'll get an error again if I try to run the server. Of course, because I just told rails it shall open a page by a non-existing controller and method. So what next? I keep that step in mind and go on with the next step. This step will be finished at step 6.
 
 ### 04. Prepare scaffolding
 
@@ -171,19 +171,19 @@ This will add some files to our filesystem again. We added the scaffold <tt>User
 
 Next stories:
 
-    $ rails g scaffold Story title teaser:text genre users:references
+    $ rails g scaffold Story title teaser:text genre user:references
 
 A story has a title, teaser and genre. So I added these as attributes. I also added <tt>users:references</tt>, this provides me a relationship between users and stories. If I now open <tt>app/models/story.rb</tt> I can see <tt>belongs_to :users</tt>. As it should be.
 
 Next chapters:
 
-    $ rails g scaffold Chapter title content:text stories:references
+    $ rails g scaffold Chapter title content:text story:references
 
 The same thing like for stories now happend for the chapters. Only that the <tt>app/models/chapter.rb</tt> now says <tt>belongs_to :stories</tt>.
 
 Alright, next thing would be the rating:
 
-    $ rails g scaffold Rating value:integer users:references chapters:references
+    $ rails g scaffold Rating value:integer user:references chapter:references
 
 Rating only has a value and belongs to users **and** chapters.
 
@@ -292,3 +292,27 @@ Now we go to <tt>app/models/story.rb</tt> and add this:
 And again at <tt>app/models/chapter.rb</tt>:
 
     has_many :ratings
+
+### 08. User management
+
+As default we can locate to <tt>http://localhost:3000/users</tt> in the browser to see a listing of all registered users, sign up, edit and delete. Pretty nice because we only did a scaffold for the users and we have all the functionalities. Anyway, there's a big problem right now. Well, there are a couple of problems:
+
+- No login
+- No sign up authentification
+- Every user can edit every stories and anything else
+
+So you can see, there are a couple of things we need to implement, forbid and permit.
+
+I was told about a pretty nice Ruby on Rails gem, which is called <tt>devise</tt>. You can find it [on Github](https://github.com/plataformatec/devise).
+
+First thing we gonna do is installing the gem like this:
+
+Open <tt>Gemfile</tt> and add:
+
+    gem 'devise'
+
+Now run the generator via console:
+
+    $ rails generate devise:install
+
+Now you see some instructions in your console. Please follow them before continue.

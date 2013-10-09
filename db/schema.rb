@@ -16,23 +16,23 @@ ActiveRecord::Schema.define(version: 20131008121030) do
   create_table "chapters", force: true do |t|
     t.string   "title"
     t.text     "content"
-    t.integer  "stories_id"
+    t.integer  "story_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  add_index "chapters", ["stories_id"], name: "index_chapters_on_stories_id", using: :btree
+  add_index "chapters", ["story_id"], name: "index_chapters_on_story_id", using: :btree
 
   create_table "ratings", force: true do |t|
     t.integer  "value"
-    t.integer  "users_id"
-    t.integer  "chapters_id"
+    t.integer  "user_id"
+    t.integer  "chapter_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  add_index "ratings", ["chapters_id"], name: "index_ratings_on_chapters_id", using: :btree
-  add_index "ratings", ["users_id"], name: "index_ratings_on_users_id", using: :btree
+  add_index "ratings", ["chapter_id"], name: "index_ratings_on_chapter_id", using: :btree
+  add_index "ratings", ["user_id"], name: "index_ratings_on_user_id", using: :btree
 
   create_table "relationships", force: true do |t|
     t.integer  "follower_id"
@@ -49,12 +49,12 @@ ActiveRecord::Schema.define(version: 20131008121030) do
     t.string   "title"
     t.text     "teaser"
     t.string   "genre"
-    t.integer  "users_id"
+    t.integer  "user_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  add_index "stories", ["users_id"], name: "index_stories_on_users_id", using: :btree
+  add_index "stories", ["user_id"], name: "index_stories_on_user_id", using: :btree
 
   create_table "users", force: true do |t|
     t.string   "username"

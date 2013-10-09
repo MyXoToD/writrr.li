@@ -4,7 +4,7 @@ class CreateStories < ActiveRecord::Migration
       t.string :title
       t.text :teaser
       t.string :genre
-      t.references :users, index: true
+      t.references :user, index: true
 
       t.timestamps
     end
