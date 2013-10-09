@@ -40,7 +40,7 @@ To create my new Rails application I'm running the following command via console
 
     $ rails new writrr.li -d mysql -T
 
-This will provide me a full Rails construction within the folder <tt>writrr.li</tt>. I prefer to use mysql as the databse and skip the rails test units. To open and edit the file I go inside that new folder with:
+This will provide me a full Rails construction within the folder <tt>writrr.li</tt>. I prefer to use mysql as databse and skip the rails test units. To open and edit the files I go inside that new folder with:
 
     $ cd writrr.li
     $ subl . &
